@@ -24,14 +24,11 @@ void print_vector(const vector<int>& v) {
 }
 
 int large_fib_rem(long long n, int m) {
-  vector<int> fib_num (2 * m + 1);
+  vector<int> fib_num {f_1, f_2};
   int cnt = 1;
 
-  fib_num[0] = f_1;
-  fib_num[1] = f_2;
-
   for (int i = 2; i < n; ++i) {
-    fib_num[i] = (fib_num[i - 2] + fib_num[i - 1]) % m;
+    fib_num.push_back((fib_num[i - 2] + fib_num[i - 1]) % m);
     if (fib_num[i] == 1 && fib_num[i - 1] == 0) {
       break;
     }
@@ -50,5 +47,6 @@ int main() {
 
   cin >> n >> m;
   cout << large_fib_rem(n, m);
+
   return 0;
 }
