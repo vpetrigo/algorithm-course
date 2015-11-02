@@ -24,7 +24,6 @@ int large_fib_rem(long long n, int m) {
   vector<int> fib_num {f_1, f_2};
   int cnt = 1;
 
-  print_vector(fib_num);
   for (int i = 2; i < n; ++i) {
     fib_num.push_back((fib_num[i - 2] + fib_num[i - 1]) % m);
     // if the sequence repeats then exit the loop
@@ -34,7 +33,7 @@ int large_fib_rem(long long n, int m) {
 
     ++cnt;
   }
-  print_vector(fib_num);
+
   auto offset = n % cnt;
 
   return fib_num[offset];
