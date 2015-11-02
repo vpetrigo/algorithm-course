@@ -36,7 +36,7 @@ int large_fib_rem(long long n, int m) {
     ++cnt;
   }
 
-  int offset = n % cnt;
+  auto offset = n % cnt;
 
   return fib_num[offset];
 }
