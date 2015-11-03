@@ -18,7 +18,7 @@ constexpr int f_2 = 1;
 
 // Because of modulo operation under the Fibonacci numbers causes to periodical
 // sequence (https://en.wikipedia.org/wiki/Pisano_period) it is possible to
-// calculate untill n-th Fibonacci number reached or sequence starts again from F(k) = 0, F(k + 1) = 1
+// calculate until n-th Fibonacci number reached or sequence starts again from F(k) = 0, F(k + 1) = 1
 int large_fib_rem(long long n, int m) {
   vector<int> fib_num {f_1, f_2};
   int cnt = 1;
