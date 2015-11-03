@@ -1,0 +1,15 @@
+Задача:
+Докажите индукцией по $n$, что для всех $n \geq 0$ выполнено равенство $\displaystyle{\sum_{i = 0}^{n}F_i = F_{n + 2}-1}$
+Доказательство:
+$\textbf{База индукции:}$
+$\displaystyle{n = 0\:\colon\:\sum_{i=0}^{0}F_i = F_{2}- 1 \overbrace{\rightarrow}^{F_2 = 1} 0 = 1 - 1}$
+$\displaystyle{n = 1\:\colon\:\sum_{i=0}^{1}F_i = F_{3}- 1 \overbrace{\rightarrow}^{F_3 = 2} 0 + 1 = 2 - 1}$
+$\textbf{Переход:}$
+Предположим, что:
+$\displaystyle{\sum_{i=0}^{n}F_i = F_{n + 2}-1}$
+тогда данное утверждение справедливо и для $n + 1$
+$\displaystyle{\sum_{i=0}^{n + 1}F_i = F_{n + 3} - 1 \Rightarrow \sum_{i=0}^{n + 1}F_i = F_{n + 1} + \sum_{i=0}^{n}F_i \;
+\text{, а также} \;
+F_{n + 3} - 1 = F_{n + 2} + F_{n + 1} - 1 \Rightarrow \\
+\Rightarrow F_{n + 1} + \sum_{i=0}^{n}F_i = F_{n + 2} + F_{n + 1} - 1 \Rightarrow \\
+\Rightarrow \sum_{i=0}^{n}F_i = F_{n + 2} - 1 \qquad \blacksquare}$
