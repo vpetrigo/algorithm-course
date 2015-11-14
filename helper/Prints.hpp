@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <iterator>
+#include <utility>
+#include <vector>
 
 template <typename Cont>
 //  requires Container<Cont>()
@@ -16,6 +18,13 @@ void print_vector(const Cont& v) {
   std::ostream_iterator<Cont_type> os{std::cout, " "};
   std::copy(v.begin(), v.end(), os);
   std::cout << std::endl;
+}
+
+
+void print_pairs(const std::vector<std::pair<int, int>>& v) {
+  for (int i = 0; i < v.size(); ++i) {
+    std::cout << v[i].first << ' ' << v[i].second << std::endl;
+  }
 }
 
 #endif //ALGORITHM_COURSE_PRINTS_H
