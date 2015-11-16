@@ -74,7 +74,7 @@ int main() {
   fill_section(v, n);
   auto sol = dots_cover(v);
   cout << sol.size() << endl;
-  print_vector(sol);
+  print_cont(sol);
 
   return 0;
 }

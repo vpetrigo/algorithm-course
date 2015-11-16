@@ -48,7 +48,7 @@ int main() {
   cin >> n;
   auto sol = calc_dif_components(n);
   cout << sol.size() << endl;
-  print_vector(sol);
+  print_cont(sol);
 
   return 0;
 }
