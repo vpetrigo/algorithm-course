@@ -43,7 +43,7 @@ class INode {
   virtual ~INode() {}
 
  protected:
-  INode(int f) : f(f) {}
+  INode(int f) : f{f} {}
 };
 
 class InternalNode : public INode {
