@@ -12,7 +12,7 @@
 
 template <typename Cont>
 //  requires Container<Cont>()
-void print_vector(const Cont& v) {
+void print_cont(const Cont &v) {
   using Cont_type = typename Cont::value_type;
 
   std::ostream_iterator<Cont_type> os{std::cout, " "};
@@ -20,8 +20,8 @@ void print_vector(const Cont& v) {
   std::cout << std::endl;
 }
 
-
-void print_pairs(const std::vector<std::pair<int, int>>& v) {
+template <typename First, typename Second>
+void print_pairs(const std::vector<std::pair<First, Second>>& v) {
   for (int i = 0; i < v.size(); ++i) {
     std::cout << v[i].first << ' ' << v[i].second << std::endl;
   }
