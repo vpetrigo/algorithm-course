@@ -31,7 +31,7 @@ template <typename Type, typename Container = vector<Type>,
     typename Compare = less<typename Container::value_type>>
 struct Priority_queue {
   using value_type = Type;
-
+  // Root index for all queues
   static constexpr int root_index = 0;
 
   Priority_queue() {}
@@ -81,7 +81,9 @@ struct Priority_queue {
         elem_to_swap = right_ch;
       }
 
-      if (queue[index] >= queue[elem_to_swap]) {
+      // check whether current element (index)
+      // greater or less than his child (elem_to_swap)
+      if (!Comp(queue[elem_to_swap], queue[index])) {
         break;
       }
 
