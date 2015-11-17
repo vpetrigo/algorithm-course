@@ -34,7 +34,7 @@ struct Priority_queue {
   // Root index for all queues
   static constexpr int root_index = 0;
 
-  Priority_queue() {}
+  explicit Priority_queue() {}
 
   void insert(const Type& elem) {
     queue.push_back(elem);
