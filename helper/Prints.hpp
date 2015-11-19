@@ -10,13 +10,12 @@
 #include <utility>
 #include <vector>
 
-template <typename Cont>
-//  requires Container<Cont>()
-void print_cont(const Cont &v) {
-  using Cont_type = typename Cont::value_type;
+template <typename It>
+//  requires Iterator<It>()
+void print_cont(const It begin, const It end) {
+  std::ostream_iterator<typename It::value_type> os{std::cout, " "};
 
-  std::ostream_iterator<Cont_type> os{std::cout, " "};
-  std::copy(v.begin(), v.end(), os);
+  std::copy(begin, end, os);
   std::cout << std::endl;
 }
 
