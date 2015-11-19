@@ -6,5 +6,7 @@ include_directories(${helper_header_dir})
 set(helper_headers ${helper_header_dir}/Prints.hpp)
 
 set(binary_search binary_search.cpp ${helper_headers})
+set(merge_sort merge_sort.cpp ${helper_headers})
 
 add_executable(w3_task1 ${binary_search})
+add_executable(w3_task3 ${merge_sort})
