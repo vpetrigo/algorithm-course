@@ -31,68 +31,6 @@ vector<Type> fill_cont() {
   return v;
 }
 
-template <typename Type>
-class Queue {
- public:
-  using iterator = typename vector<Type>::iterator;
-  using const_iterator = typename vector<Type>::const_iterator;
-  using value_type = typename vector<vector<Type>>::value_type;
-
-  explicit Queue(initializer_list<Type>& il) : storage{il} {}
-
-  Queue(const_iterator begin, const_iterator end) : storage(distance(begin, end)) {
-    auto i = 0;
-
-    while (begin != end) {
-      storage[i].push_back(*begin++);
-      ++i;
-    }
-  }
-
-  void push_back(const value_type& elem) {
-    storage.push_back(elem);
-  }
-
-  void push_front(const value_type& elem) {
-    storage.insert(storage.begin(), elem);
-  }
-
-  const value_type& get_front() const {
-    return storage.front();
-  }
-
-  value_type& get_front() {
-    return storage.front();
-  }
-
-  void pop_front() {
-    storage.erase(storage.begin());
-  }
-
-  const_iterator begin() const {
-    return storage.cbegin();
-  }
-
-  iterator begin() {
-    return storage.begin();
-  }
-
-  const_iterator end() const {
-    return storage.cend();
-  }
-
-  iterator end() {
-    return storage.end();
-  }
-
-  const size_t size() const {
-    return storage.size();
-  }
-
- private:
-  vector<vector<Type>> storage;
-};
-
 template <typename It>
 vector<typename It::value_type> merge(const It begin, const It mid, const It end, long long& inv) {
   vector<typename It::value_type> v;
