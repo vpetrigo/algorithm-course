@@ -17,7 +17,8 @@
 #include <iostream>
 #include <vector>
 #include <iterator>
-#include <Prints.hpp>
+#include <algorithm>
+#include <queue>
 
 using namespace std;
 
@@ -136,13 +137,13 @@ auto merge_sort(It begin, It end) -> long long {
 
 long long inv = 0;
 
-template <typename Cont>
-Cont merge_it(const Cont& first, const Cont& second) {
+template <typename Index, typename Cont>
+pair<Index, Cont> merge_it(const pair<Index, Cont>& left, const pair<Index, Cont>& right) {
   Cont v;
-  auto f_it{first.begin()};
-  auto f_end{first.end()};
-  auto s_it{second.begin()};
-  auto s_end{second.end()};
+  typename Cont::const_iterator f_it{left.second.begin()};
+  typename Cont::const_iterator f_end{left.second.end()};
+  typename Cont::const_iterator s_it{right.second.begin()};
+  typename Cont::const_iterator s_end{right.second.end()};
 
   while (f_it != f_end && s_it != s_end) {
     if (*f_it <= *s_it) {
@@ -157,34 +158,46 @@ Cont merge_it(const Cont& first, const Cont& second) {
   v.insert(v.end(), f_it, f_end);
   v.insert(v.end(), s_it, s_end);
 
-  return v;
+  return make_pair(min(left.first, right.first), v);
 }
 
 template <typename CIt>
 vector<typename CIt::value_type> iterative_merge_sort(CIt begin, CIt end) {
-  Queue<typename CIt::value_type> q{begin, end};
+  using queue_elem = pair<int, vector<typename CIt::value_type>>;
+  queue<typename CIt::value_type, deque<queue_elem>> q;
 
-  while(q.size() > 1) {
-    auto first = q.get_front();
-    q.pop_front();
-    auto second = q.get_front();
-    q.pop_front();
-
-    q.push_front(merge_it(first, second));
+  for (int i = 0; begin != end; ++begin, ++i) {
+    q.push(make_pair(i, vector<typename CIt::value_type>{*begin}));
   }
 
-  return q.get_front();
+  while(q.size() > 1) {
+    auto first = q.front();
+    q.pop();
+    auto second = q.front();
+
+    if (first.first > second.first) {
+      q.push(first);
+      continue;
+    }
+
+    q.pop();
+
+    q.push(merge_it(first, second));
+  }
+
+  return q.front().second;
 }
 
 int main() {
   int n;
+  pair<int, vector<char>> p;
 
   cin >> n;
   auto v = fill_cont<int>();
 //  auto res = merge_sort(v.begin(), v.end());
 //  cout << res << endl;
-  auto sorted = iterative_merge_sort(v.cbegin(), v.cend());
-  print_cont(sorted.begin(), sorted.end());
+  vector<int> &&sorted = iterative_merge_sort(v.cbegin(), v.cend());
+//  print_cont(sorted.begin(), sorted.end());
   cout << inv << endl;
 
   return 0;
