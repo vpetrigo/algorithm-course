@@ -135,10 +135,8 @@ auto merge_sort(It begin, It end) -> long long {
   return inv;
 }
 
-long long inv = 0;
-
-template <typename Index, typename Cont>
-pair<Index, Cont> merge_it(const pair<Index, Cont>& left, const pair<Index, Cont>& right) {
+template <typename Index, typename Cont, typename Inv_type>
+pair<Index, Cont> merge_it(const pair<Index, Cont>& left, const pair<Index, Cont>& right, Inv_type& inv) {
   Cont v;
   typename Cont::const_iterator f_it{left.second.begin()};
   typename Cont::const_iterator f_end{left.second.end()};
@@ -165,6 +163,7 @@ template <typename CIt>
 vector<typename CIt::value_type> iterative_merge_sort(CIt begin, CIt end) {
   using queue_elem = pair<int, vector<typename CIt::value_type>>;
   queue<typename CIt::value_type, deque<queue_elem>> q;
+  long long inv = 0;
 
   for (int i = 0; begin != end; ++begin, ++i) {
     q.push(make_pair(i, vector<typename CIt::value_type>{*begin}));
@@ -182,8 +181,10 @@ vector<typename CIt::value_type> iterative_merge_sort(CIt begin, CIt end) {
 
     q.pop();
 
-    q.push(merge_it(first, second));
+    q.push(merge_it(first, second, inv));
   }
+
+  cout << inv << endl;
 
   return q.front().second;
 }
@@ -198,7 +199,6 @@ int main() {
 //  cout << res << endl;
   vector<int> &&sorted = iterative_merge_sort(v.cbegin(), v.cend());
 //  print_cont(sorted.begin(), sorted.end());
-  cout << inv << endl;
 
   return 0;
 }
