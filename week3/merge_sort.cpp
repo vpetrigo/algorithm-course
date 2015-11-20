@@ -97,14 +97,15 @@ pair<Index, Cont> merge_it(const pair<Index, Cont>& left, const pair<Index, Cont
   return make_pair(min(left.first, right.first), v);
 }
 
-template <typename CIt>
-vector<typename CIt::value_type> iterative_merge_sort(CIt begin, CIt end) {
-  using queue_elem = pair<int, vector<typename CIt::value_type>>;
-  queue<typename CIt::value_type, deque<queue_elem>> q;
+template <typename It>
+auto iterative_merge_sort(It begin, It end) -> long long {
+  using queue_elem = pair<int, vector<typename It::value_type>>;
+  queue<typename It::value_type, deque<queue_elem>> q;
   long long inv = 0;
+  It init_it = begin;
 
-  for (int i = 0; begin != end; ++begin, ++i) {
-    q.push(make_pair(i, vector<typename CIt::value_type>{*begin}));
+  for (auto i = 0; init_it != end; ++init_it, ++i) {
+    q.push(make_pair(i, vector<typename It::value_type>{*init_it}));
   }
 
   while(q.size() > 1) {
@@ -112,19 +113,19 @@ vector<typename CIt::value_type> iterative_merge_sort(CIt begin, CIt end) {
     q.pop();
     auto second = q.front();
 
+    // if a given element should go after others
     if (first.first > second.first) {
       q.push(first);
-      continue;
     }
-
-    q.pop();
-
-    q.push(merge_it(first, second, inv));
+    else {
+      q.pop();
+      q.push(merge_it(first, second, inv));
+    }
   }
 
-  cout << inv << endl;
+  copy(q.front().second.begin(), q.front().second.end(), begin);
 
-  return q.front().second;
+  return inv;
 }
 
 int main() {
@@ -133,10 +134,10 @@ int main() {
 
   cin >> n;
   auto v = fill_cont<int>();
-//  auto res = merge_sort(v.begin(), v.end());
-//  cout << res << endl;
-  vector<int> &&sorted = iterative_merge_sort(v.cbegin(), v.cend());
-//  print_cont(sorted.begin(), sorted.end());
+  auto res = merge_sort(v.begin(), v.end());
+//  auto res = iterative_merge_sort(v.begin(), v.end());
+
+  cout << res << endl;
 
   return 0;
 }
