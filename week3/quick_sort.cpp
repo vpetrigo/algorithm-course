@@ -19,6 +19,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <algorithm>
 #include <Prints.hpp>
 
 using namespace std;
@@ -67,6 +68,17 @@ vector<int> check_range(const vector<pair<int, int>>& arr, const int dot_num) {
 }
 
 template <typename It>
+void insertion_sort(It begin, It end) {
+  for (auto iti = begin + 1; iti != end; ++iti) {
+    auto itj = iti;
+    while (itj != begin && *itj < *(itj - 1)) {
+      swap(*itj, *(itj - 1));
+      --itj;
+    }
+  }
+}
+
+template <typename It>
 It random_delim(It begin, It end) {
   constexpr int zero = 0;
   random_device rd;
@@ -95,7 +107,7 @@ It partition(It begin, It end) {
 
 template <typename It>
 void quick_sort(It begin, It end) {
-  while (distance(begin, end) > 1) {
+  while (distance(begin, end) > 10) {
     auto r_delim = random_delim(begin, end);
 
     swap(*begin, *r_delim);
@@ -113,6 +125,7 @@ void quick_sort(It begin, It end) {
 
     begin = mid + 1;
   }
+  insertion_sort(begin, end);
 }
 
 vector<long long> dots_in_range(const vector<pair<int, int>>& arr, const int m) {
@@ -137,15 +150,18 @@ vector<long long> dots_in_range(const vector<pair<int, int>>& arr, const int m) 
 int main() {
   int n, m;
 
+
 //  vector<int> v{7,6,5,4,3,2,1};
 //  quick_sort(v.begin(), v.end());
+//  insertion_sort(v.begin(), v.end());
 //  print_cont(v.begin(), v.end());
   cin >> n >> m;
 
   auto &&arr = fill_cont(n, m);
   quick_sort(arr.begin(), arr.end());
+  //sort(arr.begin(), arr.end());
   auto &&solution = dots_in_range(arr, m);
-  print_cont(solution.begin(), solution.end());
+//  print_cont(solution.begin(), solution.end());
 
   return 0;
 }
