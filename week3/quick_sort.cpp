@@ -49,11 +49,6 @@ vector<pair<int, int>> fill_cont(const int n, const int m) {
   return v;
 }
 
-template<typename CIt>
-int get_it_value(CIt it) {
-  return it->first;
-}
-
 // naive check (O(n^2))
 vector<int> check_range(const vector<pair<int, int>> &arr, const int dot_num) {
   int elem;
@@ -77,7 +72,7 @@ void insertion_sort(It begin, It end) {
   for (auto iti = begin + 1; iti != end; ++iti) {
     auto itj = iti;
     while (itj != begin && *itj < *(itj - 1)) {
-      swap(*itj, *(itj - 1));
+      iter_swap(itj, itj - 1);
       --itj;
     }
   }
@@ -213,6 +208,7 @@ int main() {
   cin >> n >> m;
 
   auto &&arr = fill_cont(n, m);
+
   quick_sort3(arr.begin(), arr.end());
 
   auto &&solution = dots_in_range(arr, m);
