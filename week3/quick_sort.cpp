@@ -105,6 +105,23 @@ It partition(It begin, It end) {
   return cur;
 }
 
+template<typename It>
+It partition3(It begin, It end) {
+  auto delim = begin;
+  auto cur = begin;
+
+  for (auto it = begin + 1; it != end; ++it) {
+    if (*delim > *it) {
+      ++cur;
+      swap(*cur, *it);
+    }
+  }
+
+  swap(*delim, *cur);
+
+  return cur;
+}
+
 template <typename It>
 void quick_sort(It begin, It end) {
   while (distance(begin, end) > 10) {
@@ -118,12 +135,12 @@ void quick_sort(It begin, It end) {
 
     if (size_left > size_right) {
       quick_sort(begin, mid);
+      begin = mid + 1;
     }
     else {
-      quick_sort(mid, end - 1);
+      quick_sort(mid + 1, end);
+      end = mid - 1;
     }
-
-    begin = mid + 1;
   }
   insertion_sort(begin, end);
 }
@@ -149,9 +166,8 @@ vector<long long> dots_in_range(const vector<pair<int, int>>& arr, const int m) 
 
 int main() {
   int n, m;
+//  vector<int> v{2, 3, 9, 2, 9};
 
-
-//  vector<int> v{7,6,5,4,3,2,1};
 //  quick_sort(v.begin(), v.end());
 //  insertion_sort(v.begin(), v.end());
 //  print_cont(v.begin(), v.end());
