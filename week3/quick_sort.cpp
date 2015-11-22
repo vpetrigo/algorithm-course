@@ -49,8 +49,13 @@ vector<pair<int, int>> fill_cont(const int n, const int m) {
   return v;
 }
 
+template<typename CIt>
+int get_it_value(CIt it) {
+  return it->first;
+}
+
 // naive check (O(n^2))
-vector<int> check_range(const vector<pair<int, int>>& arr, const int dot_num) {
+vector<int> check_range(const vector<pair<int, int>> &arr, const int dot_num) {
   int elem;
   vector<int> res(dot_num);
 
@@ -67,7 +72,7 @@ vector<int> check_range(const vector<pair<int, int>>& arr, const int dot_num) {
   return res;
 }
 
-template <typename It>
+template<typename It>
 void insertion_sort(It begin, It end) {
   for (auto iti = begin + 1; iti != end; ++iti) {
     auto itj = iti;
@@ -78,12 +83,12 @@ void insertion_sort(It begin, It end) {
   }
 }
 
-template <typename It>
+template<typename It>
 It random_delim(It begin, It end) {
   constexpr int zero = 0;
-  random_device rd;
+  static random_device rd;
   mt19937 gen(rd());
-  uniform_int_distribution<int> dis(zero, distance(begin, end));
+  uniform_int_distribution<int> dis(zero, distance(begin, end - 1));
 
   return begin + dis(gen);
 }
@@ -96,38 +101,21 @@ It partition(It begin, It end) {
   for (auto it = begin + 1; it != end; ++it) {
     if (*delim > *it) {
       ++cur;
-      swap(*cur, *it);
+      iter_swap(cur, it);
     }
   }
 
-  swap(*delim, *cur);
+  iter_swap(delim, cur);
 
   return cur;
 }
 
 template<typename It>
-It partition3(It begin, It end) {
-  auto delim = begin;
-  auto cur = begin;
-
-  for (auto it = begin + 1; it != end; ++it) {
-    if (*delim > *it) {
-      ++cur;
-      swap(*cur, *it);
-    }
-  }
-
-  swap(*delim, *cur);
-
-  return cur;
-}
-
-template <typename It>
 void quick_sort(It begin, It end) {
   while (distance(begin, end) > 10) {
     auto r_delim = random_delim(begin, end);
 
-    swap(*begin, *r_delim);
+    iter_swap(begin, r_delim);
     It mid = partition(begin, end);
 
     auto size_left = distance(begin, mid);
@@ -139,17 +127,72 @@ void quick_sort(It begin, It end) {
     }
     else {
       quick_sort(mid + 1, end);
-      end = mid - 1;
+      end = mid;
     }
   }
   insertion_sort(begin, end);
 }
 
-vector<long long> dots_in_range(const vector<pair<int, int>>& arr, const int m) {
+template<typename It>
+It partition3(It begin, It end, It &gr_part) {
+  auto delim = end - 1;
+  auto cur_gr = end - 1;
+  auto cur_i = begin;
+  auto cur_less = begin;
+
+  while (distance(cur_i, cur_gr) > 0) {
+    if (*cur_i < *delim) {
+      iter_swap(cur_i++, cur_less++);
+    }
+    else if (*cur_i == *delim) {
+      iter_swap(cur_i, --cur_gr);
+    }
+    else {
+      ++cur_i;
+    }
+  }
+
+  auto middle = min(distance(cur_less, cur_gr), distance(cur_gr, delim) + 1);
+
+  for (auto it = cur_less, sit = delim - middle + 1; it != cur_less + middle; ++it, ++sit) {
+    iter_swap(it, sit);
+  }
+
+  auto offset = distance(cur_gr, delim);
+  gr_part = cur_less + offset;
+
+  return cur_less;
+}
+
+template<typename It>
+void quick_sort3(It begin, It end) {
+  while (distance(begin, end) > 1) {
+    auto r_delim = random_delim(begin, end);
+    It gr_part;
+
+    iter_swap(r_delim, end - 1);
+
+    It less_part = partition3(begin, end, gr_part);
+
+    auto size_left = distance(begin, less_part);
+    auto size_right = distance(gr_part, end);
+
+    if (size_left > size_right) {
+      quick_sort3(begin, less_part);
+      begin = gr_part + 1;
+    }
+    else {
+      quick_sort3(gr_part + 1, end);
+      end = less_part;
+    }
+  }
+}
+
+vector<long long> dots_in_range(const vector<pair<int, int>> &arr, const int m) {
   vector<long long> res(m);
   auto opened = 0;
 
-  for (auto& elem : arr) {
+  for (auto &elem : arr) {
     if (elem.second == open) {
       ++opened;
     }
@@ -166,18 +209,15 @@ vector<long long> dots_in_range(const vector<pair<int, int>>& arr, const int m) 
 
 int main() {
   int n, m;
-//  vector<int> v{2, 3, 9, 2, 9};
 
-//  quick_sort(v.begin(), v.end());
-//  insertion_sort(v.begin(), v.end());
-//  print_cont(v.begin(), v.end());
   cin >> n >> m;
 
   auto &&arr = fill_cont(n, m);
-  quick_sort(arr.begin(), arr.end());
-  //sort(arr.begin(), arr.end());
+  quick_sort3(arr.begin(), arr.end());
+
   auto &&solution = dots_in_range(arr, m);
-//  print_cont(solution.begin(), solution.end());
+
+  print_cont(solution.begin(), solution.end());
 
   return 0;
 }
