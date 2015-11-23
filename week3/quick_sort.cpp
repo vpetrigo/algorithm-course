@@ -69,11 +69,13 @@ vector<int> check_range(const vector<pair<int, int>> &arr, const int dot_num) {
 
 template<typename It>
 void insertion_sort(It begin, It end) {
-  for (auto iti = begin + 1; iti != end; ++iti) {
-    auto itj = iti;
-    while (itj != begin && *itj < *(itj - 1)) {
-      iter_swap(itj, itj - 1);
-      --itj;
+  if (distance(begin, end) > 2) {
+    for (auto iti = begin + 1; iti != end; ++iti) {
+      auto itj = iti;
+      while (itj != begin && *itj < *(itj - 1)) {
+        iter_swap(itj, itj - 1);
+        --itj;
+      }
     }
   }
 }
