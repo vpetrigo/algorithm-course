@@ -20,6 +20,10 @@
 
 using namespace std;
 
+constexpr auto inf_min = numeric_limits<int>::min();
+constexpr auto inf_max = numeric_limits<int>::max();
+constexpr int no_prev = -1;
+
 vector<int> fill_cont(const int n) {
   vector<int> v(n);
 
@@ -30,26 +34,42 @@ vector<int> fill_cont(const int n) {
   return v;
 }
 
+vector<int> build_answer(vector<int>& prevs) {
+  const auto len = prevs.size();
+  vector<int> res(len, no_prev);
+
+  for (auto i = 0; i < len && prevs[i] != no_prev; ++i) {
+    res[i] = len - prevs[i];
+  }
+
+  res.erase(remove(res.begin(), res.end(), no_prev), res.end());
+  reverse(res.begin(), res.end());
+
+  return res;
+}
+
 template <typename Cont>
 Cont lis_bottom_up(const Cont& numbers) {
-  constexpr int no_prev = -1;
   const auto len = numbers.size();
-  vector<int> d(len);
+  vector<int> d(len + 1);
   vector<int> prev(len, no_prev);
-  d.front() = numeric_limits<int>::min();
-  fill(d.begin() + 1, d.end(), numeric_limits<int>::max());
+  d.front() = inf_min;
+  fill(d.begin() + 1, d.end(), inf_max);
 
   for (auto i = 0; i < len; ++i) {
     auto j = distance(d.begin(), upper_bound(d.begin(), d.end(), numbers[i]));
 
-    if (d[j - 1] < numbers[i] && numbers[i] < d[j]) {
-      d[j] = numbers[i];
-      prev[j] = i;
+    if (d[j] == inf_max || (numbers[i] < d[j] && d[j - 1] < numbers[i])) {
+      if (d[j - 1] <= numbers[i] && numbers[i] < d[j]) {
+        d[j] = numbers[i];
+        prev[j - 1] = i;
+      }
     }
   }
 
-  print_cont(prev.begin(), prev.end());
-  return d;
+  auto res = build_answer(prev);
+
+  return res;
 }
 
 int main() {
@@ -58,9 +78,14 @@ int main() {
   cin >> n;
 
   auto numbers = fill_cont(n);
+  reverse(numbers.begin(), numbers.end());
   auto res = lis_bottom_up(numbers);
 
-  print_cont(res.begin(), res.end());
+  cout << res.size() << endl;
+  for (auto& elem : res) {
+    cout << elem << ' ';
+  }
+  cout << endl;
 
   return 0;
 }
