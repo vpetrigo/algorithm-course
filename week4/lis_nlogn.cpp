@@ -48,7 +48,7 @@ vector<int> build_answer(vector<int>& prevs) {
   return res;
 }
 
-template <typename Cont>
+/*template <typename Cont>
 Cont lis_bottom_up(const Cont& numbers) {
   const auto len = numbers.size();
   vector<int> d(len + 1);
@@ -59,12 +59,41 @@ Cont lis_bottom_up(const Cont& numbers) {
   for (auto i = 0; i < len; ++i) {
     auto j = distance(d.begin(), upper_bound(d.begin(), d.end(), numbers[i]));
 
-    if (d[j] == inf_max || (numbers[i] < d[j] && d[j - 1] < numbers[i])) {
+    if (numbers[i] ) {
       if (d[j - 1] <= numbers[i] && numbers[i] < d[j]) {
         d[j] = numbers[i];
         prev[j - 1] = i;
       }
     }
+//    }
+  }
+
+  auto res = build_answer(prev);
+
+  return res;
+}*/
+
+template <typename Cont>
+Cont lis_bottom_up(const Cont& numbers) {
+  const auto len = numbers.size();
+  vector<int> d(len + 1);
+  vector<int> prev(len, no_prev);
+  fill(d.begin(), d.end(), inf_min);
+  d.back() = inf_max;
+  cout << "D: ";
+  print_cont(d.begin(), d.end());
+
+  for (auto i = 0; i < len; ++i) {
+    auto j = distance(d.begin(), upper_bound(d.begin(), d.end(), numbers[i], less_equal<int>{}));
+    cout << "NUMBER: " << numbers[i] << endl;
+    cout << "j: " << j << endl;
+      if (d[j - 1] < numbers[i] && numbers[i] <= d[j]) {
+        d[j - 1] = numbers[i];
+        prev[j - 1] = i;
+      }
+    cout << "D: ";
+    print_cont(d.begin(), d.end());
+//    }
   }
 
   auto res = build_answer(prev);
@@ -78,7 +107,7 @@ int main() {
   cin >> n;
 
   auto numbers = fill_cont(n);
-  reverse(numbers.begin(), numbers.end());
+//  reverse(numbers.begin(), numbers.end());
   auto res = lis_bottom_up(numbers);
 
   cout << res.size() << endl;
