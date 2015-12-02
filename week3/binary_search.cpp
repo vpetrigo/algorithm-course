@@ -74,13 +74,12 @@ int main() {
 
   auto array = fill_cont(n);
 
-  sort(array.begin(), array.end());
   cin >> m;
 
   auto search_for = fill_cont(m);
   auto solution = lookup_for_elem(array, search_for);
 
-  print_cont(solution);
+  print_cont(solution.begin(), solution.end());
 
   return 0;
 }
