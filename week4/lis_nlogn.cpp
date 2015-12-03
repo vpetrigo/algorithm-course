@@ -16,7 +16,6 @@
 #include <vector>
 #include <algorithm>
 #include <limits>
-#include "Prints.hpp"
 
 using namespace std;
 
@@ -34,71 +33,37 @@ vector<int> fill_cont(const int n) {
   return v;
 }
 
-vector<int> build_answer(vector<int>& prevs) {
-  const auto len = prevs.size();
-  vector<int> res(len, no_prev);
-
-  for (auto i = 0; i < len && prevs[i] != no_prev; ++i) {
-    res[i] = len - prevs[i];
-  }
-
-  res.erase(remove(res.begin(), res.end(), no_prev), res.end());
-  reverse(res.begin(), res.end());
-
-  return res;
-}
-
-/*template <typename Cont>
-Cont lis_bottom_up(const Cont& numbers) {
-  const auto len = numbers.size();
-  vector<int> d(len + 1);
-  vector<int> prev(len, no_prev);
-  d.front() = inf_min;
-  fill(d.begin() + 1, d.end(), inf_max);
-
-  for (auto i = 0; i < len; ++i) {
-    auto j = distance(d.begin(), upper_bound(d.begin(), d.end(), numbers[i]));
-
-    if (numbers[i] ) {
-      if (d[j - 1] <= numbers[i] && numbers[i] < d[j]) {
-        d[j] = numbers[i];
-        prev[j - 1] = i;
-      }
-    }
-//    }
-  }
-
-  auto res = build_answer(prev);
-
-  return res;
-}*/
-
 template <typename Cont>
 Cont lis_bottom_up(const Cont& numbers) {
   const auto len = numbers.size();
-  vector<int> d(len + 1);
-  vector<int> prev(len, no_prev);
-  fill(d.begin(), d.end(), inf_min);
-  d.back() = inf_max;
-  cout << "D: ";
-  print_cont(d.begin(), d.end());
+  vector<int> sequences(len + 1, inf_max);
+  sequences.front() = inf_min;
+  vector<int> positions(len + 1, no_prev);
+  vector<int> prev_ind(len, no_prev);
+  int max_seq_len = 0;
 
   for (auto i = 0; i < len; ++i) {
-    auto j = distance(d.begin(), upper_bound(d.begin(), d.end(), numbers[i], less_equal<int>{}));
-    cout << "NUMBER: " << numbers[i] << endl;
-    cout << "j: " << j << endl;
-      if (d[j - 1] < numbers[i] && numbers[i] <= d[j]) {
-        d[j - 1] = numbers[i];
-        prev[j - 1] = i;
-      }
-    cout << "D: ";
-    print_cont(d.begin(), d.end());
-//    }
+    int j = distance(sequences.begin(), upper_bound(sequences.begin(), sequences.end(), numbers[i]));
+
+    if (sequences[j - 1] <= numbers[i] && numbers[i] < sequences[j]) {
+      sequences[j] = numbers[i];
+      positions[j] = i;
+      prev_ind[i] = positions[j - 1];
+      max_seq_len = max(max_seq_len, j);
+    }
   }
 
-  auto res = build_answer(prev);
+  vector<int> answer;
+  vector<int> ans_ind;
+  auto k = positions[max_seq_len];
 
-  return res;
+  while (k != no_prev) {
+    answer.push_back(numbers[k]);
+    ans_ind.push_back(len - k);
+    k = prev_ind[k];
+  }
+
+  return ans_ind;
 }
 
 int main() {
@@ -107,7 +72,7 @@ int main() {
   cin >> n;
 
   auto numbers = fill_cont(n);
-//  reverse(numbers.begin(), numbers.end());
+  reverse(numbers.begin(), numbers.end());
   auto res = lis_bottom_up(numbers);
 
   cout << res.size() << endl;
