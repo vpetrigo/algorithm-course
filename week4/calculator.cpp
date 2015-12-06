@@ -31,7 +31,7 @@ using namespace std;
 
 struct Calc {
   int num_of_op_td(int number);
-  int num_of_op_ud(int number);
+  int num_of_op_bu(int number);
 
   static constexpr auto inf = numeric_limits<int>::max();
 
@@ -48,6 +48,7 @@ int main() {
   cin >> n;
   cout << c.num_of_op_td(n) << endl;
   c.print_counted();
+  cout << c.num_of_op_bu(n) << endl;
 
   return 0;
 }
@@ -77,7 +78,28 @@ int Calc::num_of_op_td(int number) {
   return counted[number];
 }
 
-int Calc::num_of_op_ud(int number) {
+int Calc::num_of_op_bu(int number) {
+  const auto len = number + 1;
+  vector<int> amount_of_ops(len, inf);
+
+  for (const auto& elem : amount_of_ops) {
+    cout << elem << ' ';
+  }
+  cout << endl;
+
+  for (int i = 2; i < len; ++i) {
+    auto addition = 1;
+    auto mul_by_two = inf;
+    auto mul_by_three = inf;
+
+    amount_of_ops[i] = min({addition, mul_by_two, mul_by_three});
+  }
+
+  for (const auto& elem : amount_of_ops) {
+    cout << elem << ' ';
+  }
+  cout << endl;
+
   return 0;
 }
 
@@ -87,12 +109,16 @@ void Calc::print_counted() const {
   sort(sequence.begin(), sequence.end());
 
   auto back = sequence.back();
-  int length = back.second + 1;
-  vector<int> result(length, 1);
+  int length = back.second;
+  vector<int> result(length + 1, 1);
 
   while (back.second > 0) {
     result[length--] = back.first;
-    back = *find_if(sequence.begin(), sequence.end(), [length](const pair<int, int>& elem) { return elem.second == length; });
+    back = *find_if(sequence.begin(), sequence.end(),
+                    [length, back](const pair<int, int>& elem) { return elem.second == length &&
+                        (back.first / 2 == elem.first
+                            || back.first - 1 == elem.first
+                            || back.first / 3 == elem.first); });
   }
 
   for (const auto& elem : result) {
