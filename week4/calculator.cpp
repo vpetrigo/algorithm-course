@@ -61,7 +61,6 @@ int main() {
     cout << elem << ' ';
   }
   cout << endl;
-  c.print_counted();
 
   return 0;
 }
