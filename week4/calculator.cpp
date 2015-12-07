@@ -26,22 +26,24 @@
 #include <unordered_map>
 #include <algorithm>
 #include <limits>
+#include <cassert>
 
 using namespace std;
 
 struct Calc {
   int num_of_op_td(int number);
-  int num_of_op_bu(int number);
+  vector<int> num_of_op_bu(int number);
 
   static constexpr auto inf = numeric_limits<int>::max();
 
   // for using with the num_of_op_td function
   void print_counted() const;
 
+  // storage for calculated values
   unordered_map<int, int> counted;
 
  private:
-  void restore_answer(const vector<int>& amount_of_op);
+  vector<int> restore_answer(const vector<int>& amount_of_op) const;
 };
 
 int main() {
@@ -49,9 +51,17 @@ int main() {
   Calc c;
 
   cin >> n;
-  cout << c.num_of_op_td(n) << endl;
+//  cout << c.num_of_op_td(n) << endl;
+//  c.print_counted();
+  auto result = c.num_of_op_bu(n);
+
+  // size() - 1, because we do not have to count initial value 1
+  cout << result.size() - 1 << endl;
+  for (const auto& elem : result) {
+    cout << elem << ' ';
+  }
+  cout << endl;
   c.print_counted();
-  cout << c.num_of_op_bu(n) << endl;
 
   return 0;
 }
@@ -81,7 +91,7 @@ int Calc::num_of_op_td(int number) {
   return counted[number];
 }
 
-int Calc::num_of_op_bu(int number) {
+vector<int> Calc::num_of_op_bu(int number) {
   const auto len = number + 1;
   constexpr auto inf = numeric_limits<int>::max();
   vector<int> amount_of_ops(len, 0);
@@ -101,10 +111,15 @@ int Calc::num_of_op_bu(int number) {
     amount_of_ops[i] = min({addition, mul_by_two, mul_by_three});
   }
 
-  return 0;
+  auto result = restore_answer(amount_of_ops);
+
+  return result;
 }
 
 void Calc::print_counted() const {
+  // check whether we use the Calc::num_of_op_td or not
+  assert(counted.size() > 0);
+
   vector<pair<int, int>> sequence{counted.begin(), counted.end()};
 
   sort(sequence.begin(), sequence.end());
@@ -128,12 +143,30 @@ void Calc::print_counted() const {
   cout << endl;
 }
 
-void Calc::restore_answer(const vector<int> &amount_of_op) {
-  const auto length = amount_of_op.size();
-  const auto last_elem = amount_of_op.back();
-  vector<int> result(last_elem, 1);
+vector<int> Calc::restore_answer(const vector<int> &amount_of_op) const {
+  auto length = amount_of_op.size() - 1;
+  // number of operations (x + 1, 2 * x or 3 * x) to get to the number X
+  auto ops = amount_of_op.back();
+  vector<int> result(ops + 1, 1);
 
-  for (int i = length; i >= 1; --i) {
-    if ()
+
+  while (length >= 1) {
+    result[ops--] = length;
+    // the distance from current number to another which could be 3 * (number / 3)
+    auto divide_by_three = length / 3;
+    // the distance from current number to another which could be 2 * (number / 2)
+    auto divide_by_two = length / 2;
+
+    if (length % 3 == 0 && amount_of_op[divide_by_three] == ops) {
+      length = divide_by_three;
+    }
+    else if (length % 2 == 0  && amount_of_op[divide_by_two] == ops) {
+      length = divide_by_two;
+    }
+    else {
+      --length;
+    }
   }
+
+  return result;
 }
