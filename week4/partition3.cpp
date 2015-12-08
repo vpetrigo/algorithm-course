@@ -50,7 +50,7 @@ int main() {
 }
 
 int Partition3::partition(const vector<int> &A, int i, int sum1, int sum2) {
-  if (storage[i][sum1][sum2] == inf) {
+  if (storage[i][sum1][sum2] == -1) {
     if (sum1 == 0 && sum2 == 0) {
       storage[i][sum1][sum2] = 1;
     }
@@ -78,7 +78,7 @@ void Partition3::init_storage(int n, int size) {
     for (auto& col : row) {
       col.resize(size);
       for (auto& elem : col) {
-        elem = inf;
+        elem = -1;
       }
     }
   }
