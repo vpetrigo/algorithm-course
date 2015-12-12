@@ -19,7 +19,8 @@ class Partition3 {
 
   void init_storage(int n, int size);
 
-  int partition(const vector<int> &A, int i, int sum1, int sum2);
+  int partition_bu(const vector<int> &A, int i, int sum1, int sum2);
+  int partition_td(const vector<int> &A, int sum);
 
   void print_storage() const;
 
@@ -45,7 +46,7 @@ int main() {
   if (sum % 3 == 0) {
     auto A = sum / 3;
     p3.init_storage(v.size(), A + 1);
-    cout << p3.partition(v, v.size() - 1, A, A) << endl;
+    cout << p3.partition_bu(v, v.size() - 1, A, A) << endl;
     p3.restore_answer(v, A);
   }
   else {
@@ -55,7 +56,7 @@ int main() {
   return 0;
 }
 
-int Partition3::partition(const vector<int> &A, int i, int sum1, int sum2) {
+int Partition3::partition_bu(const vector<int> &A, int i, int sum1, int sum2) {
   if (storage[i][sum1][sum2] == inf) {
     if (sum1 == 0 && sum2 == 0) {
       storage[i][sum1][sum2] = 1;
@@ -64,12 +65,12 @@ int Partition3::partition(const vector<int> &A, int i, int sum1, int sum2) {
       storage[i][sum1][sum2] = (sum1 == 0) && (sum2 == 0);
     }
     else {
-      storage[i][sum1][sum2] = partition(A, i - 1, sum1, sum2);
+      storage[i][sum1][sum2] = partition_bu(A, i - 1, sum1, sum2);
       if (A[i] <= sum1) {
-        storage[i][sum1][sum2] = max(storage[i][sum1][sum2], partition(A, i - 1, sum1 - A[i], sum2));
+        storage[i][sum1][sum2] = max(storage[i][sum1][sum2], partition_bu(A, i - 1, sum1 - A[i], sum2));
       }
       if (A[i] <= sum2) {
-        storage[i][sum1][sum2] = max(storage[i][sum1][sum2], partition(A, i - 1, sum1, sum2 - A[i]));
+        storage[i][sum1][sum2] = max(storage[i][sum1][sum2], partition_bu(A, i - 1, sum1, sum2 - A[i]));
       }
     }
   }
@@ -84,7 +85,7 @@ void Partition3::init_storage(int n, int size) {
     for (auto& col : row) {
       col.resize(size);
       for (auto& elem : col) {
-        elem = -1;
+        elem = inf;
       }
     }
   }
@@ -152,4 +153,40 @@ void Partition3::print_partition(const vector<int> &S) {
   }
 
   cout << "}" << endl;
+}
+
+int Partition3::partition_td(const vector<int> &A, int sum) {
+  const auto length = A.size() + 1;
+  vector<vector<vector<int>>> result(length);
+
+  for (auto& row : result) {
+    row.resize(sum + 1);
+    for (auto& col : row) {
+      col.resize(sum + 1);
+      for (auto& elem : col) {
+        elem = 0;
+      }
+    }
+  }
+
+  for (int i = 0; i < length; ++i) {
+    result[i][0][0] = 1;
+  }
+
+  for (int i = 1; i < length; ++i) {
+    for (int S1 = 0; S1 < sum + 1; ++S1) {
+      for (int S2 = 0; S2 < sum + 1; ++S2) {
+        result[i][S1][S2] = result[i - 1][S1][S2];
+
+        if (A[i - 1] <= S1) {
+          result[i][S1][S2] = max(result[i][S1][S2], result[i - 1][S1 - A[i - 1]][S2]);
+        }
+        if (A[i - 1 <= S2]) {
+          result[i][S1][S2] = max(result[i][S1][S2], result[i - 1][S1][S2 - A[i - 1]]);
+        }
+      }
+    }
+  }
+
+  return 0;
 }
