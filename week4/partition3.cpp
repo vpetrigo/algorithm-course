@@ -6,7 +6,6 @@
 #include <vector>
 #include <numeric>
 #include <limits>
-#include <set>
 #include <iomanip>
 
 using namespace std;
@@ -45,9 +44,10 @@ int main() {
 
   if (sum % 3 == 0) {
     auto A = sum / 3;
-    p3.init_storage(v.size(), A + 1);
-    cout << p3.partition_bu(v, v.size() - 1, A, A) << endl;
+    p3.init_storage(v.size() + 1, A + 1);
+    cout << p3.partition_bu(v, v.size(), A, A) << endl;
     p3.restore_answer(v, A);
+    p3.partition_td(v, A);
   }
   else {
     cout << "0";
@@ -66,11 +66,11 @@ int Partition3::partition_bu(const vector<int> &A, int i, int sum1, int sum2) {
     }
     else {
       storage[i][sum1][sum2] = partition_bu(A, i - 1, sum1, sum2);
-      if (A[i] <= sum1) {
-        storage[i][sum1][sum2] = max(storage[i][sum1][sum2], partition_bu(A, i - 1, sum1 - A[i], sum2));
+      if (A[i - 1] <= sum1) {
+        storage[i][sum1][sum2] = max(storage[i][sum1][sum2], partition_bu(A, i - 1, sum1 - A[i - 1], sum2));
       }
-      if (A[i] <= sum2) {
-        storage[i][sum1][sum2] = max(storage[i][sum1][sum2], partition_bu(A, i - 1, sum1, sum2 - A[i]));
+      if (A[i - 1] <= sum2) {
+        storage[i][sum1][sum2] = max(storage[i][sum1][sum2], partition_bu(A, i - 1, sum1, sum2 - A[i - 1]));
       }
     }
   }
@@ -106,33 +106,24 @@ void Partition3::print_storage() const {
 }
 
 void Partition3::restore_answer(const vector<int> &A, int sum) {
-  int j = sum;
-  int k = sum;
+  int sum1 = sum;
+  int sum2 = sum;
 
   vector<int> A1;
   vector<int> A2;
   vector<int> A3;
 
-  for (int i = A.size() - 1; i >= 0; --i) {
-    if (storage[i][j][k] != inf) {
-      if (A[i] <= j) {
-        if (i == 0 || storage[i - 1][j - A[i]][k] != inf) {
-          A1.push_back(A[i]);
-          j -= A[i];
-        }
-      }
-      else if (A[i] <= k) {
-        if (i == 0 || storage[i - 1][j][k  - A[i]] != inf) {
-          A2.push_back(A[i]);
-          k -= A[i];
-        }
-      }
-      else {
-        A3.push_back(A[i]);
-      }
+  for (int i = A.size(); i > 0; --i) {
+    if (A[i - 1] <= sum1 && storage[i - 1][sum1 - A[i - 1]][sum2] != 0) {
+      A1.push_back(A[i - 1]);
+      sum1 -= A[i - 1];
+    }
+    else if (A[i - 1] <= sum2 && storage[i - 1][sum1][sum2 - A[i - 1]] != 0) {
+      A2.push_back(A[i - 1]);
+      sum2 -= A[i - 1];
     }
     else {
-      A3.push_back(A[i]);
+      A3.push_back(A[i - 1]);
     }
   }
 
@@ -157,36 +148,73 @@ void Partition3::print_partition(const vector<int> &S) {
 
 int Partition3::partition_td(const vector<int> &A, int sum) {
   const auto length = A.size() + 1;
+  const auto sum_len = sum + 1;
   vector<vector<vector<int>>> result(length);
 
+  // generate distance 3D table
   for (auto& row : result) {
-    row.resize(sum + 1);
+    row.resize(sum_len);
     for (auto& col : row) {
-      col.resize(sum + 1);
+      col.resize(sum_len);
       for (auto& elem : col) {
         elem = 0;
       }
     }
   }
 
+  // fill each dist[i, 0, 0] with 1
   for (int i = 0; i < length; ++i) {
     result[i][0][0] = 1;
   }
 
   for (int i = 1; i < length; ++i) {
-    for (int S1 = 0; S1 < sum + 1; ++S1) {
-      for (int S2 = 0; S2 < sum + 1; ++S2) {
+    for (int S1 = 0; S1 < sum_len; ++S1) {
+      for (int S2 = 0; S2 < sum_len; ++S2) {
         result[i][S1][S2] = result[i - 1][S1][S2];
 
         if (A[i - 1] <= S1) {
           result[i][S1][S2] = max(result[i][S1][S2], result[i - 1][S1 - A[i - 1]][S2]);
         }
-        if (A[i - 1 <= S2]) {
+        if (A[i - 1] <= S2) {
           result[i][S1][S2] = max(result[i][S1][S2], result[i - 1][S1][S2 - A[i - 1]]);
         }
       }
     }
   }
 
-  return 0;
+  // restore partitions
+  if (result[length - 1][sum][sum] != 0) {
+    int s1 = sum;
+    int s2 = sum;
+    vector<int> part1, part2, part3;
+
+    for (int i = length - 1; i > 0; --i) {
+      if (A[i - 1] <= s1 && result[i - 1][s1 - A[i - 1]][s2] != 0) {
+        part1.push_back(A[i - 1]);
+        s1 -= A[i - 1];
+      }
+      else if (A[i - 1] <= s2 && result[i - 1][s1][s2 - A[i - 1]] != 0) {
+        part2.push_back(A[i - 1]);
+        s2 -= A[i - 1];
+      }
+      else {
+        part3.push_back(A[i - 1]);
+      }
+    }
+
+    for (const auto& e : part1) {
+      cout << e << ' ';
+    }
+    cout << endl;
+    for (const auto& e : part2) {
+      cout << e << ' ';
+    }
+    cout << endl;
+    for (const auto& e : part3) {
+      cout << e << ' ';
+    }
+    cout << endl;
+  }
+
+  return result[length - 1][sum][sum];
 }
