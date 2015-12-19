@@ -149,16 +149,8 @@ void Partition3::print_partition(const vector<int> &S) {
 int Partition3::partition_td(const vector<int> &A, int sum) {
   const auto length = A.size() + 1;
   const auto sum_len = sum + 1;
-  vector<vector<vector<int>>> result(length, vector<vector<int>> (sum_len, vector<int> (sum_len)));
-
   // generate distance 3D table
-  for (auto& row : result) {
-    for (auto& col : row) {
-      for (auto& elem : col) {
-        elem = 0;
-      }
-    }
-  }
+  vector<vector<vector<int>>> result(length, vector<vector<int>> (sum_len, vector<int> (sum_len, 0)));
 
   // fill each dist[i, 0, 0] with 1
   for (int i = 0; i < length; ++i) {
